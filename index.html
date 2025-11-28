@@ -1,0 +1,3839 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LootBox - Premium PC Parts & Peripherals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0a0a14;
+            overflow-x: hidden;
+        }
+
+        /* ==================== CUSTOM SCROLLBAR ==================== */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a2e; }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #4f46e5, #6366f1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #6366f1, #8b5cf6); }
+
+        /* ==================== ANIMATED BACKGROUND ==================== */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background:
+                radial-gradient(ellipse at 20% 80%, rgba(79, 70, 229, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 60%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+        @keyframes bgFloat {
+            0%, 100% { background-position: 0% 0%, 100% 100%, 50% 50%; }
+            50% { background-position: 100% 100%, 0% 0%, 50% 50%; }
+        }
+
+        /* ==================== FLOATING PARTICLES ==================== */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(135deg, #4f46e5, #d4af37);
+            border-radius: 50%;
+            animation: floatParticle 15s infinite ease-in-out;
+            opacity: 0;
+        }
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* ==================== PAGE TRANSITIONS ==================== */
+        .page {
+            display: none;
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .page.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==================== NAVIGATION ==================== */
+        .nav-link.active {
+            color: #d4af37;
+            border-bottom: 2px solid #d4af37;
+        }
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #d4af37, #6366f1);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+
+        /* ==================== TEXT GRADIENTS ==================== */
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 40%, #a78bfa 70%, #c4b5fd 100%);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textShine 6s ease-in-out infinite;
+        }
+        @keyframes textShine {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 100% center; }
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ==================== HEADER SCROLL EFFECT ==================== */
+        header {
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        header.scrolled {
+            background: rgba(10, 10, 15, 0.98) !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ==================== PRODUCT CARDS ==================== */
+        .product-card {
+            position: relative;
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.9), rgba(18, 18, 26, 0.95));
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .product-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .product-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(99, 102, 241, 0.3), transparent 30%);
+            animation: borderRotate 6s linear infinite paused;
+            z-index: -1;
+        }
+        .product-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 0 40px rgba(99, 102, 241, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        .product-card:hover::before { opacity: 1; }
+        .product-card:hover::after { animation-play-state: running; }
+        @keyframes borderRotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Product card entrance animation */
+        .product-card.animate-in {
+            animation: cardEnter 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            opacity: 0;
+        }
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ==================== PRODUCT IMAGE ==================== */
+        .product-image-container {
+            position: relative;
+            overflow: hidden;
+        }
+        .product-image {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .product-card:hover .product-image {
+            transform: scale(1.1);
+        }
+        .product-image-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10, 10, 20, 0.8) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .product-card:hover .product-image-overlay { opacity: 1; }
+
+        /* ==================== PRODUCT BADGES ==================== */
+        .badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 10;
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+        .badge-new {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+        }
+        .badge-hot {
+            background: linear-gradient(135deg, #f97316, #fb923c);
+            color: white;
+        }
+        .badge-sale {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            color: white;
+        }
+        .badge-limited {
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+            color: white;
+        }
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* ==================== WISHLIST BUTTON ==================== */
+        .wishlist-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        .product-card:hover .wishlist-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .wishlist-btn:hover {
+            background: rgba(239, 68, 68, 0.8);
+            border-color: #ef4444;
+            transform: scale(1.15);
+        }
+        .wishlist-btn.active {
+            background: rgba(239, 68, 68, 0.9);
+            border-color: #ef4444;
+        }
+        .wishlist-btn.active svg {
+            fill: white;
+            animation: heartBeat 0.6s ease-in-out;
+        }
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.3); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* ==================== QUICK VIEW BUTTON ==================== */
+        .quick-view-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a1a2e;
+            border-radius: 25px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+            border: none;
+        }
+        .product-card:hover .quick-view-btn {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .quick-view-btn:hover {
+            background: #6366f1;
+            color: white;
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        /* ==================== RATING STARS ==================== */
+        .stars {
+            display: flex;
+            gap: 2px;
+            color: #fbbf24;
+            font-size: 12px;
+        }
+        .stars span.empty { color: #374151; }
+
+        /* ==================== STOCK INDICATOR ==================== */
+        .stock-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 8px;
+        }
+        .stock-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: stockPulse 2s ease-in-out infinite;
+        }
+        .stock-dot.in-stock { background: #10b981; }
+        .stock-dot.low-stock { background: #f59e0b; }
+        .stock-dot.out-of-stock { background: #ef4444; }
+        @keyframes stockPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ==================== PRICE STYLES ==================== */
+        .price-glow {
+            color: #a5b4fc;
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        }
+
+        /* ==================== ADD TO CART BUTTON ==================== */
+        .btn-add-cart {
+            position: relative;
+            background: linear-gradient(135deg, #4f46e5, #6366f1, #8b5cf6);
+            background-size: 200% 200%;
+            color: white;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: gradientShift 4s ease infinite;
+        }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .btn-add-cart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+        .btn-add-cart:active {
+            transform: translateY(0) scale(0.98);
+        }
+        .btn-add-cart.adding {
+            pointer-events: none;
+        }
+        .btn-add-cart.added {
+            background: linear-gradient(135deg, #10b981, #34d399);
+        }
+
+        /* Ripple effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+        @keyframes rippleEffect {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* ==================== HERO SECTION ==================== */
+        .hero-section {
+            position: relative;
+            background: linear-gradient(165deg,
+                #0c0c18 0%,
+                #0f1021 25%,
+                #0a0a14 50%,
+                #0d0d1a 75%,
+                #111827 100%);
+            overflow: hidden;
+            min-height: 100vh;
+        }
+
+        /* Premium Background Effects */
+        .hero-bg-effects {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        /* Primary Accent Glow - Indigo */
+        .hero-glow-1 {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            top: -20%;
+            left: -15%;
+            background: radial-gradient(ellipse, rgba(79, 70, 229, 0.12) 0%, rgba(79, 70, 229, 0.05) 40%, transparent 70%);
+            animation: glowPulse1 12s ease-in-out infinite;
+            filter: blur(60px);
+        }
+
+        /* Secondary Accent Glow - Purple */
+        .hero-glow-2 {
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            bottom: -10%;
+            right: -10%;
+            background: radial-gradient(ellipse, rgba(124, 58, 237, 0.1) 0%, rgba(124, 58, 237, 0.04) 40%, transparent 70%);
+            animation: glowPulse2 15s ease-in-out infinite;
+            filter: blur(80px);
+        }
+
+        /* Tertiary Accent - Subtle Gold */
+        .hero-glow-3 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            top: 30%;
+            right: 15%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.06) 0%, transparent 60%);
+            animation: glowPulse3 18s ease-in-out infinite;
+            filter: blur(40px);
+        }
+
+        @keyframes glowPulse1 {
+            0%, 100% { opacity: 1; transform: scale(1) translate(0, 0); }
+            50% { opacity: 0.8; transform: scale(1.05) translate(20px, 10px); }
+        }
+        @keyframes glowPulse2 {
+            0%, 100% { opacity: 0.9; transform: scale(1) translate(0, 0); }
+            50% { opacity: 1; transform: scale(1.08) translate(-15px, -10px); }
+        }
+        @keyframes glowPulse3 {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.1); }
+        }
+
+        /* Tech Circuit Pattern - Subtle Lines */
+        .hero-circuit-pattern {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%236366f1' stroke-width='0.5'/%3E%3Cpath d='M30 10v20h40V10M30 70v20M70 70v20M10 30h20M70 30h20M10 70h20M70 70h20' stroke='%236366f1' stroke-width='0.5' fill='none'/%3E%3Ccircle cx='30' cy='30' r='3' fill='%236366f1'/%3E%3Ccircle cx='70' cy='30' r='3' fill='%236366f1'/%3E%3Ccircle cx='30' cy='70' r='3' fill='%236366f1'/%3E%3Ccircle cx='70' cy='70' r='3' fill='%236366f1'/%3E%3C/svg%3E");
+            background-size: 100px 100px;
+        }
+
+        /* Grid Pattern Overlay - Refined */
+        .hero-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(99, 102, 241, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.015) 1px, transparent 1px);
+            background-size: 80px 80px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 40%, transparent 100%);
+            -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 40%, transparent 100%);
+        }
+
+        /* Floating Geometric Elements */
+        .hero-shapes {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+        .hero-shape {
+            position: absolute;
+            opacity: 0.4;
+        }
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: 5%;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 50%;
+            animation: shapeRotate1 40s linear infinite;
+        }
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            right: 8%;
+            border: 1px solid rgba(139, 92, 246, 0.08);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation: shapeRotate2 35s linear infinite reverse;
+        }
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            bottom: 20%;
+            left: 15%;
+            border: 1px solid rgba(212, 175, 55, 0.06);
+            border-radius: 50%;
+            animation: shapeRotate1 30s linear infinite;
+        }
+        @keyframes shapeRotate1 {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes shapeRotate2 {
+            from { transform: rotate(0deg) scale(1); }
+            to { transform: rotate(360deg) scale(1); }
+        }
+
+        /* Scan Line Effect */
+        .hero-scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.3), transparent);
+            animation: scanMove 8s linear infinite;
+            opacity: 0.5;
+        }
+        @keyframes scanMove {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* Hero Content - Two Column Layout */
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: center;
+            min-height: auto;
+        }
+
+        /* Hero Text Side - Left Column - Centered Text */
+        .hero-text-content {
+            text-align: center;
+            padding-right: 20px;
+            order: 1;
+        }
+
+        /* Hero Image Side - Right Column */
+        .hero-image-wrapper {
+            position: relative;
+            order: 2;
+            padding: 20px;
+        }
+
+        /* Decorative Frame Elements */
+        .hero-image-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 70%;
+            height: 70%;
+            border: 2px solid rgba(99, 102, 241, 0.15);
+            border-radius: 24px;
+            transform: translate(10px, -10px);
+            z-index: -1;
+        }
+        .hero-image-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50%;
+            height: 50%;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            border-radius: 20px;
+            transform: translate(-15px, 15px);
+            z-index: -1;
+            filter: blur(20px);
+        }
+
+        .hero-image-container {
+            position: relative;
+            height: 100%;
+            min-height: 450px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow:
+                0 30px 60px rgba(0, 0, 0, 0.4),
+                0 15px 40px rgba(99, 102, 241, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transform: perspective(1000px) rotateY(-2deg);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hero-image-container:hover {
+            transform: perspective(1000px) rotateY(0deg) translateY(-5px);
+        }
+
+        /* Multi-layer Gradient Overlay */
+        .hero-image-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.1) 100%),
+                linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, transparent 60%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Premium Border Effect */
+        .hero-image-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            z-index: 3;
+            pointer-events: none;
+            box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            animation: heroImageReveal 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hero-image-container:hover .hero-image {
+            transform: scale(1.03);
+        }
+
+        @keyframes heroImageReveal {
+            from {
+                opacity: 0;
+                transform: scale(1.08);
+                filter: blur(8px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0);
+            }
+        }
+
+        /* Corner Accents */
+        .hero-image-accent {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            z-index: 4;
+            pointer-events: none;
+        }
+        .hero-image-accent.top-left {
+            top: -2px;
+            left: -2px;
+            border-top: 3px solid rgba(99, 102, 241, 0.6);
+            border-left: 3px solid rgba(99, 102, 241, 0.6);
+            border-radius: 24px 0 0 0;
+        }
+        .hero-image-accent.bottom-right {
+            bottom: -2px;
+            right: -2px;
+            border-bottom: 3px solid rgba(139, 92, 246, 0.5);
+            border-right: 3px solid rgba(139, 92, 246, 0.5);
+            border-radius: 0 0 24px 0;
+        }
+
+        /* Ambient Glow Effects */
+        .hero-image-glow {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 120px;
+            background: radial-gradient(ellipse, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+            filter: blur(40px);
+            z-index: -2;
+            animation: glowPulse 4s ease-in-out infinite;
+        }
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        /* Secondary Glow */
+        .hero-image-glow-secondary {
+            position: absolute;
+            top: 50%;
+            right: -30px;
+            transform: translateY(-50%);
+            width: 100px;
+            height: 60%;
+            background: radial-gradient(ellipse, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            filter: blur(30px);
+            z-index: -2;
+        }
+
+        /* Premium Title Styling */
+        .hero-title-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .hero-title-accent {
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #6366f1, #8b5cf6, transparent);
+            border-radius: 2px;
+        }
+
+        /* Animated Lines Background for Title Section */
+        .hero-text-content {
+            position: relative;
+        }
+        .hero-text-content::before {
+            content: '';
+            position: absolute;
+            inset: -40px -60px;
+            pointer-events: none;
+            z-index: -1;
+            background:
+                /* Horizontal flowing lines */
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 60px,
+                    rgba(99, 102, 241, 0.03) 60px,
+                    rgba(99, 102, 241, 0.03) 61px
+                );
+            animation: linesFlow 20s linear infinite;
+        }
+
+        /* Animated vertical lines container */
+        .hero-lines-container {
+            position: absolute;
+            inset: -50px -80px;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+            opacity: 0.6;
+        }
+
+        /* Individual animated lines */
+        .hero-line {
+            position: absolute;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(
+                180deg,
+                transparent 0%,
+                rgba(99, 102, 241, 0.4) 20%,
+                rgba(139, 92, 246, 0.6) 50%,
+                rgba(99, 102, 241, 0.4) 80%,
+                transparent 100%
+            );
+            animation: lineMove 4s ease-in-out infinite;
+        }
+        .hero-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -2px;
+            width: 5px;
+            height: 30px;
+            background: linear-gradient(180deg, transparent, rgba(99, 102, 241, 0.8), transparent);
+            border-radius: 50%;
+            filter: blur(2px);
+            animation: particleDown 3s ease-in-out infinite;
+        }
+
+        .hero-line:nth-child(1) { left: 5%; animation-delay: 0s; }
+        .hero-line:nth-child(2) { left: 20%; animation-delay: 0.5s; }
+        .hero-line:nth-child(3) { left: 35%; animation-delay: 1s; }
+        .hero-line:nth-child(4) { left: 50%; animation-delay: 1.5s; }
+        .hero-line:nth-child(5) { left: 65%; animation-delay: 2s; }
+        .hero-line:nth-child(6) { left: 80%; animation-delay: 2.5s; }
+        .hero-line:nth-child(7) { left: 95%; animation-delay: 3s; }
+
+        .hero-line:nth-child(1)::after { animation-delay: 0.2s; }
+        .hero-line:nth-child(2)::after { animation-delay: 0.7s; }
+        .hero-line:nth-child(3)::after { animation-delay: 1.2s; }
+        .hero-line:nth-child(4)::after { animation-delay: 1.7s; }
+        .hero-line:nth-child(5)::after { animation-delay: 2.2s; }
+        .hero-line:nth-child(6)::after { animation-delay: 2.7s; }
+        .hero-line:nth-child(7)::after { animation-delay: 3.2s; }
+
+        @keyframes lineMove {
+            0%, 100% { opacity: 0.3; transform: scaleY(0.8); }
+            50% { opacity: 0.7; transform: scaleY(1); }
+        }
+
+        @keyframes particleDown {
+            0% { top: -30px; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: calc(100% + 30px); opacity: 0; }
+        }
+
+        @keyframes linesFlow {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 120px; }
+        }
+
+        /* Horizontal scanning lines */
+        .hero-scan-lines {
+            position: absolute;
+            inset: -30px -50px;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .hero-scan-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), rgba(139, 92, 246, 0.3), transparent);
+            animation: scanLineMove 6s ease-in-out infinite;
+        }
+        .hero-scan-line:nth-child(1) { animation-delay: 0s; }
+        .hero-scan-line:nth-child(2) { animation-delay: 2s; }
+        .hero-scan-line:nth-child(3) { animation-delay: 4s; }
+
+        @keyframes scanLineMove {
+            0% { top: -10%; opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { top: 110%; opacity: 0; }
+        }
+
+        /* Corner brackets decoration */
+        .hero-corner-brackets {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .hero-corner-brackets::before,
+        .hero-corner-brackets::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid transparent;
+            opacity: 0.3;
+            animation: bracketPulse 3s ease-in-out infinite;
+        }
+        .hero-corner-brackets::before {
+            top: -20px;
+            left: -20px;
+            border-top-color: rgba(99, 102, 241, 0.5);
+            border-left-color: rgba(99, 102, 241, 0.5);
+        }
+        .hero-corner-brackets::after {
+            bottom: -20px;
+            right: -20px;
+            border-bottom-color: rgba(139, 92, 246, 0.5);
+            border-right-color: rgba(139, 92, 246, 0.5);
+        }
+
+        @keyframes bracketPulse {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.05); }
+        }
+
+        /* Responsive Two-Column Layout */
+        @media (max-width: 1024px) {
+            .hero-split {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+            .hero-text-content {
+                text-align: center;
+                padding-right: 0;
+                order: 2;
+            }
+            .hero-image-wrapper {
+                order: 1;
+                padding: 10px;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            .hero-image-container {
+                min-height: 320px;
+                max-height: 420px;
+                transform: none;
+            }
+            .hero-image-container:hover {
+                transform: translateY(-5px);
+            }
+            .hero-title-accent {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            .hero-features {
+                justify-content: center;
+            }
+            .hero-buttons {
+                justify-content: center;
+            }
+            .hero-image-wrapper::before {
+                width: 60%;
+                height: 60%;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero-image-container {
+                min-height: 260px;
+                max-height: 320px;
+                border-radius: 20px;
+            }
+            .hero-image-container::after {
+                border-radius: 20px;
+            }
+            .hero-split {
+                gap: 36px;
+            }
+            .hero-image-wrapper::before,
+            .hero-image-wrapper::after {
+                display: none;
+            }
+            .hero-image-accent {
+                width: 40px;
+                height: 40px;
+            }
+            .hero-image-accent.top-left {
+                border-radius: 20px 0 0 0;
+            }
+            .hero-image-accent.bottom-right {
+                border-radius: 0 0 20px 0;
+            }
+        }
+
+        /* Smooth Transition to Next Section */
+        .hero-transition {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 250px;
+            background: linear-gradient(to bottom,
+                transparent 0%,
+                rgba(17, 24, 39, 0.2) 20%,
+                rgba(17, 24, 39, 0.5) 50%,
+                rgba(17, 24, 39, 0.85) 75%,
+                rgba(17, 24, 39, 1) 100%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* About Section Interactive Styles */
+        .about-stat-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .about-stat-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .about-stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.3);
+        }
+        .about-stat-card:hover::before {
+            opacity: 1;
+        }
+        .about-stat-icon {
+            color: #818cf8;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: center;
+            transition: transform 0.4s ease, color 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        .about-stat-card:hover .about-stat-icon {
+            transform: scale(1.2) rotate(5deg);
+            color: #a5b4fc;
+        }
+        .about-stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+        .about-stat-label {
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-top: 0.25rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .about-card {
+            background: linear-gradient(145deg, rgba(31, 41, 55, 0.8) 0%, rgba(17, 24, 39, 0.9) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .about-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #a855f7, #d4af37);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+        .about-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.25);
+        }
+        .about-card:hover::before {
+            transform: scaleX(1);
+        }
+        .about-card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #818cf8;
+            margin-bottom: 1.25rem;
+            transition: all 0.4s ease;
+        }
+        .about-card:hover .about-card-icon {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+            transform: rotate(-5deg) scale(1.1);
+        }
+
+        .about-value-item {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            background: rgba(31, 41, 55, 0.5);
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .about-value-item:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateY(-3px);
+        }
+        .about-value-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-radius: 12px;
+            color: #818cf8;
+            transition: all 0.3s ease;
+        }
+        .about-value-item:hover .about-value-icon {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+        }
+
+        /* CEO Section Styles */
+        .ceo-card {
+            background: linear-gradient(145deg, rgba(31, 41, 55, 0.9) 0%, rgba(17, 24, 39, 0.95) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .ceo-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 25px 60px -15px rgba(99, 102, 241, 0.3);
+            transform: translateY(-5px);
+        }
+        .ceo-image-wrapper {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            padding: 4px;
+            background: linear-gradient(135deg, #6366f1, #a855f7, #d4af37);
+            margin: 0 auto;
+        }
+        .ceo-image-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #a855f7, #d4af37);
+            z-index: -1;
+            filter: blur(15px);
+            opacity: 0.5;
+        }
+        .ceo-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(17, 24, 39, 1);
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        .social-link {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            transition: all 0.3s ease;
+        }
+        .social-link:hover {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+        }
+        .social-link.facebook:hover { background: #1877f2; }
+        .social-link.instagram:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .social-link.twitter:hover { background: #000; }
+        .social-link.email:hover { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
+
+        /* Section Divider */
+        .about-section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3), transparent);
+            margin: 3rem 0;
+        }
+
+        /* Introduction Card */
+        .intro-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .intro-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #a855f7, #d4af37);
+        }
+
+        /* Core Values Grid */
+        .core-value-card {
+            background: linear-gradient(145deg, rgba(31, 41, 55, 0.6) 0%, rgba(17, 24, 39, 0.8) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 1rem;
+            padding: 1.75rem 1.25rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: visible;
+        }
+        .core-value-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, #a855f7);
+            transition: width 0.4s ease;
+        }
+        .core-value-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.2);
+        }
+        .core-value-card:hover::after {
+            width: 60%;
+        }
+        .core-value-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-radius: 12px;
+            color: #818cf8;
+            transition: all 0.3s ease;
+        }
+        .core-value-card:hover .core-value-icon {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        /* Core Value Tooltip */
+        .core-value-tooltip {
+            position: absolute;
+            bottom: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            width: 220px;
+            padding: 1rem;
+            background: linear-gradient(145deg, rgba(17, 24, 39, 0.98) 0%, rgba(31, 41, 55, 0.98) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            pointer-events: none;
+        }
+        .core-value-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, #a855f7, #d4af37);
+            border-radius: 12px 12px 0 0;
+        }
+        .core-value-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid rgba(31, 41, 55, 0.98);
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+        }
+        .core-value-tooltip p {
+            color: #d1d5db;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+        .core-value-card:hover .core-value-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Responsive tooltip positioning */
+        @media (max-width: 768px) {
+            .core-value-tooltip {
+                width: 180px;
+                padding: 0.75rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* CTA Section */
+        .about-cta {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .about-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-title {
+            animation: heroTitleEnter 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            letter-spacing: -0.02em;
+        }
+        @keyframes heroTitleEnter {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero-subtitle {
+            animation: heroSubtitleEnter 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+            opacity: 0;
+        }
+        @keyframes heroSubtitleEnter {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Professional Hero Description */
+        .hero-description {
+            font-size: 1.125rem;
+            line-height: 1.75;
+            color: #9ca3af;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+        }
+        .hero-description strong {
+            color: #e5e7eb;
+            font-weight: 500;
+        }
+
+        /* Feature Highlights - Clean Pills */
+        .hero-features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .hero-feature {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(17, 24, 39, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #d1d5db;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .hero-feature:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+        .hero-feature svg {
+            width: 16px;
+            height: 16px;
+            color: #6366f1;
+        }
+
+        /* Hero Stats - Professional Style - Full Width */
+        .hero-stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            width: 100%;
+            padding: 28px 40px;
+            background: linear-gradient(135deg, rgba(17, 24, 39, 0.6), rgba(17, 24, 39, 0.4));
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+        }
+        .hero-stat {
+            text-align: center;
+            position: relative;
+        }
+        .hero-stat:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 40px;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, rgba(99, 102, 241, 0.3), transparent);
+        }
+        .hero-stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+        .hero-stat-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-stats-container {
+                margin: 0 auto;
+                max-width: 450px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero-description { font-size: 1rem; }
+            .hero-features { gap: 8px; }
+            .hero-feature { padding: 8px 14px; font-size: 13px; }
+            .hero-stats-container {
+                padding: 20px 16px;
+                gap: 16px;
+                max-width: 100%;
+            }
+            .hero-stat-value { font-size: 1.5rem; }
+            .hero-stat:not(:last-child)::after { right: -8px; }
+        }
+
+        .hero-buttons {
+            animation: heroButtonsEnter 1s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+            opacity: 0;
+        }
+        @keyframes heroButtonsEnter {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==================== SCROLL ANIMATIONS ==================== */
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Base state for scroll-animated elements */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .scroll-animate.animate-in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Fade up animation */
+        .scroll-fade-up {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .scroll-fade-up.animate-in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Fade in from left */
+        .scroll-fade-left {
+            opacity: 0;
+            transform: translateX(-60px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .scroll-fade-left.animate-in-view {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Fade in from right */
+        .scroll-fade-right {
+            opacity: 0;
+            transform: translateX(60px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .scroll-fade-right.animate-in-view {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Scale up animation */
+        .scroll-scale {
+            opacity: 0;
+            transform: scale(0.85);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .scroll-scale.animate-in-view {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Staggered children animation */
+        .scroll-stagger > * {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .scroll-stagger.animate-in-view > *:nth-child(1) { transition-delay: 0.1s; }
+        .scroll-stagger.animate-in-view > *:nth-child(2) { transition-delay: 0.2s; }
+        .scroll-stagger.animate-in-view > *:nth-child(3) { transition-delay: 0.3s; }
+        .scroll-stagger.animate-in-view > *:nth-child(4) { transition-delay: 0.4s; }
+        .scroll-stagger.animate-in-view > *:nth-child(5) { transition-delay: 0.5s; }
+        .scroll-stagger.animate-in-view > *:nth-child(6) { transition-delay: 0.6s; }
+        .scroll-stagger.animate-in-view > *:nth-child(7) { transition-delay: 0.7s; }
+        .scroll-stagger.animate-in-view > *:nth-child(8) { transition-delay: 0.8s; }
+        .scroll-stagger.animate-in-view > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Section header animations */
+        .section-header {
+            position: relative;
+        }
+        .section-header.scroll-animate {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+        .section-header.animate-in-view {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        .section-header::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #d4af37);
+            margin: 16px auto 0;
+            border-radius: 2px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+        }
+        .section-header.animate-in-view::after {
+            width: 80px;
+        }
+
+        /* Product card scroll animation */
+        .product-card.scroll-card {
+            opacity: 0;
+            transform: translateY(50px) scale(0.95);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .product-card.scroll-card.animate-in-view {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Blur-in effect */
+        .scroll-blur {
+            opacity: 0;
+            filter: blur(10px);
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, filter 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .scroll-blur.animate-in-view {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0);
+        }
+
+        /* Rotate in effect */
+        .scroll-rotate {
+            opacity: 0;
+            transform: perspective(1000px) rotateX(10deg) translateY(40px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .scroll-rotate.animate-in-view {
+            opacity: 1;
+            transform: perspective(1000px) rotateX(0deg) translateY(0);
+        }
+
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            .scroll-animate,
+            .scroll-fade-up,
+            .scroll-fade-left,
+            .scroll-fade-right,
+            .scroll-scale,
+            .scroll-blur,
+            .scroll-rotate,
+            .scroll-stagger > *,
+            .product-card.scroll-card {
+                opacity: 1;
+                transform: none;
+                filter: none;
+                transition: none;
+            }
+            html {
+                scroll-behavior: auto;
+            }
+        }
+
+        /* Hero CTA Button - Premium Style */
+        .btn-hero {
+            position: relative;
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #7c3aed 100%);
+            background-size: 200% 200%;
+            padding: 16px 36px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            color: white;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.6s ease;
+        }
+        .btn-hero:hover::before { left: 100%; }
+        .btn-hero:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+            background-position: 100% 100%;
+        }
+        .btn-hero:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        /* ==================== TOAST NOTIFICATIONS ==================== */
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.98), rgba(18, 18, 26, 0.99));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 16px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 30px rgba(99, 102, 241, 0.1);
+            animation: toastSlideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        .toast-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            animation: iconPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.2s forwards;
+            transform: scale(0);
+        }
+        .toast.success .toast-icon { background: linear-gradient(135deg, #10b981, #34d399); }
+        .toast.error .toast-icon { background: linear-gradient(135deg, #ef4444, #f87171); }
+        .toast.info .toast-icon { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .toast.success { border-color: rgba(16, 185, 129, 0.5); }
+        .toast.error { border-color: rgba(239, 68, 68, 0.5); }
+        .toast.info { border-color: rgba(99, 102, 241, 0.5); }
+        .toast-content { flex: 1; }
+        .toast-title { font-weight: 600; margin-bottom: 2px; }
+        .toast-message { font-size: 13px; color: #9ca3af; }
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 0 0 16px 16px;
+            animation: toastProgress 3s linear forwards;
+        }
+        .toast.success .toast-progress { background: linear-gradient(90deg, #10b981, #34d399); }
+        @keyframes toastSlideIn {
+            from { opacity: 0; transform: translateX(100%) scale(0.8); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        @keyframes toastSlideOut {
+            from { opacity: 1; transform: translateX(0) scale(1); }
+            to { opacity: 0; transform: translateX(100%) scale(0.8); }
+        }
+        @keyframes iconPop {
+            from { transform: scale(0) rotate(-180deg); }
+            to { transform: scale(1) rotate(0deg); }
+        }
+        @keyframes toastProgress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+        .toast.exit { animation: toastSlideOut 0.4s cubic-bezier(0.4, 0, 1, 1) forwards; }
+
+        /* ==================== CART ICON ANIMATION ==================== */
+        .cart-icon-container {
+            position: relative;
+        }
+        .cart-icon-container.shake {
+            animation: cartShake 0.6s ease-in-out;
+        }
+        @keyframes cartShake {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(15deg); }
+            40% { transform: rotate(-15deg); }
+            60% { transform: rotate(10deg); }
+            80% { transform: rotate(-10deg); }
+        }
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            min-width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: badgeEnter 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        @keyframes badgeEnter {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+        .cart-badge.bump {
+            animation: badgeBump 0.3s ease;
+        }
+        @keyframes badgeBump {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        /* ==================== FLYING ITEM ANIMATION ==================== */
+        .flying-item {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            z-index: 9999;
+            pointer-events: none;
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.5);
+        }
+        @keyframes flyToCart {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* ==================== SKELETON LOADING ==================== */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(31, 41, 55, 0.6) 25%, rgba(55, 65, 81, 0.6) 50%, rgba(31, 41, 55, 0.6) 75%);
+            background-size: 200% 100%;
+            animation: skeletonPulse 1.5s ease-in-out infinite;
+            border-radius: 8px;
+        }
+        @keyframes skeletonPulse {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ==================== SOUND TOGGLE ==================== */
+        .sound-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(31, 41, 55, 0.9);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 50;
+        }
+        .sound-toggle:hover {
+            background: rgba(99, 102, 241, 0.2);
+            color: white;
+            transform: scale(1.1);
+        }
+        .sound-toggle.active { color: #10b981; }
+
+        /* ==================== MINI CART PREVIEW ==================== */
+        .mini-cart {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 15px;
+            width: 320px;
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.98), rgba(18, 18, 26, 0.99));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        .cart-icon-container:hover .mini-cart {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .mini-cart-item {
+            display: flex;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+        .mini-cart-item:last-child { border-bottom: none; }
+        .mini-cart-empty {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+        }
+
+        /* ==================== SECTION HEADERS ==================== */
+        .section-header {
+            position: relative;
+            display: inline-block;
+        }
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #4f46e5, #d4af37);
+            border-radius: 2px;
+        }
+
+        /* ==================== RESPONSIVE STYLES ==================== */
+        @media (max-width: 768px) {
+            .toast {
+                min-width: auto;
+                max-width: calc(100vw - 32px);
+                right: 16px;
+                left: 16px;
+            }
+            .toast-container {
+                right: 0;
+                left: 0;
+                padding: 0 16px;
+            }
+            .mini-cart { display: none; }
+            .product-card:hover { transform: translateY(-5px); }
+        }
+
+        @media (max-width: 640px) {
+            .sound-toggle { bottom: 80px; }
+            .btn-add-cart { padding: 10px 16px; font-size: 14px; }
+        }
+
+        /* ==================== REDUCED MOTION ==================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ==================== QUICK VIEW MODAL ==================== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: linear-gradient(145deg, rgba(26, 26, 46, 0.98), rgba(18, 18, 26, 0.99));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 24px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow: hidden;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+
+    <!-- Floating Particles -->
+    <div class="particles-container" id="particles"></div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Header & Navigation -->
+    <header class="bg-gray-900/80 backdrop-blur-md sticky top-0 z-50 shadow-lg shadow-indigo-900/20 border-b border-indigo-900/20">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <a href="#home" class="flex items-center space-x-3 nav-trigger group">
+                    <!-- SVG Logo for LootBox -->
+                    <svg class="h-10 w-10 text-indigo-500 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 8.25L12 3L3 8.25V15.75L12 21L21 15.75V8.25Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                        <path d="M12 15.75L21 11.25M12 15.75L3 11.25M12 15.75V21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16.5 6.375L7.5 11.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 3V9" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="text-2xl font-bold text-white">Loot<span class="text-gradient">Box</span></span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="nav-link nav-trigger text-gray-300 hover:text-white transition duration-300 pb-1">Home</a>
+                    <a href="#components" class="nav-link nav-trigger text-gray-300 hover:text-white transition duration-300 pb-1">Components</a>
+                    <a href="#peripherals" class="nav-link nav-trigger text-gray-300 hover:text-white transition duration-300 pb-1">Peripherals</a>
+                    <a href="#about" class="nav-link nav-trigger text-gray-300 hover:text-white transition duration-300 pb-1">About Us</a>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-4">
+                    <!-- Cart Icon with Mini Cart Preview -->
+                    <div class="cart-icon-container relative" id="cart-icon-container">
+                        <a href="cart.html" class="relative text-gray-300 hover:text-white transition duration-300 block p-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <span id="cart-count" class="cart-badge hidden">0</span>
+                        </a>
+                        <!-- Mini Cart Preview -->
+                        <div class="mini-cart" id="mini-cart">
+                            <div class="text-sm font-semibold text-white mb-3 flex justify-between items-center">
+                                <span>Shopping Cart</span>
+                                <span id="mini-cart-count" class="text-indigo-400">0 items</span>
+                            </div>
+                            <div id="mini-cart-items" class="max-h-60 overflow-y-auto">
+                                <div class="mini-cart-empty">
+                                    <svg class="w-12 h-12 mx-auto mb-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                    <p>Your cart is empty</p>
+                                </div>
+                            </div>
+                            <div id="mini-cart-footer" class="hidden border-t border-indigo-900/30 pt-3 mt-3">
+                                <div class="flex justify-between text-sm mb-3">
+                                    <span class="text-gray-400">Subtotal:</span>
+                                    <span id="mini-cart-total" class="font-semibold text-white">₱0</span>
+                                </div>
+                                <a href="cart.html" class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
+                                    View Cart
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#contact" class="nav-trigger btn-hero text-sm">
+                        Contact Us
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center gap-3">
+                    <a href="cart.html" class="cart-icon-container relative text-gray-300 hover:text-white p-2" id="mobile-cart-icon">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <span id="mobile-cart-badge" class="cart-badge hidden">0</span>
+                    </a>
+                    <button id="mobile-menu-button" class="text-gray-300 hover:text-white focus:outline-none p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden pb-4">
+                <a href="#home" class="nav-link nav-trigger block py-3 px-4 text-sm text-gray-300 hover:bg-indigo-900/30 rounded-lg transition">Home</a>
+                <a href="#components" class="nav-link nav-trigger block py-3 px-4 text-sm text-gray-300 hover:bg-indigo-900/30 rounded-lg transition">Components</a>
+                <a href="#peripherals" class="nav-link nav-trigger block py-3 px-4 text-sm text-gray-300 hover:bg-indigo-900/30 rounded-lg transition">Peripherals</a>
+                <a href="#about" class="nav-link nav-trigger block py-3 px-4 text-sm text-gray-300 hover:bg-indigo-900/30 rounded-lg transition">About Us</a>
+                <a href="#contact" class="nav-trigger block w-full text-center mt-3 py-3 px-4 text-sm bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition duration-300">Contact Us</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Home Page -->
+        <section id="home" class="page active">
+            <!-- Hero Section -->
+            <div class="hero-section relative overflow-hidden" id="hero-section">
+                <!-- Background Glow Effects -->
+                <div class="hero-bg-effects">
+                    <div class="hero-glow-1"></div>
+                    <div class="hero-glow-2"></div>
+                    <div class="hero-glow-3"></div>
+                </div>
+
+                <!-- Tech Circuit Pattern -->
+                <div class="hero-circuit-pattern"></div>
+
+                <!-- Floating Geometric Shapes -->
+                <div class="hero-shapes">
+                    <div class="hero-shape shape-1"></div>
+                    <div class="hero-shape shape-2"></div>
+                    <div class="hero-shape shape-3"></div>
+                </div>
+
+                <!-- Subtle Grid Pattern -->
+                <div class="hero-grid"></div>
+
+                <!-- Scan Line Effect -->
+                <div class="hero-scanline"></div>
+
+                <!-- Hero Content - Two Column Layout -->
+                <div class="hero-content container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-28">
+                    <div class="hero-split">
+                        <!-- Left Side - Text Content -->
+                        <div class="hero-text-content">
+                            <!-- Animated Lines Background -->
+                            <div class="hero-lines-container">
+                                <div class="hero-line"></div>
+                                <div class="hero-line"></div>
+                                <div class="hero-line"></div>
+                                <div class="hero-line"></div>
+                                <div class="hero-line"></div>
+                                <div class="hero-line"></div>
+                                <div class="hero-line"></div>
+                            </div>
+                            <!-- Scanning Lines -->
+                            <div class="hero-scan-lines">
+                                <div class="hero-scan-line"></div>
+                                <div class="hero-scan-line"></div>
+                                <div class="hero-scan-line"></div>
+                            </div>
+                            <!-- Corner Brackets -->
+                            <div class="hero-corner-brackets"></div>
+
+                            <!-- Title -->
+                            <div class="hero-title-wrapper">
+                                <div class="hero-title-accent"></div>
+                                <h1 class="hero-title text-3xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
+                                    Premium <span class="gradient-text">PC Hardware</span><br>
+                                    <span class="text-gray-100">& Gaming Gear</span>
+                                </h1>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="hero-subtitle mt-6 lg:mt-8">
+                                <p class="hero-description">
+                                    Discover <strong>curated components</strong> from the world's leading brands.
+                                    From high-performance graphics cards to precision peripherals — everything you need
+                                    to build your <strong>perfect setup</strong>.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Right Side - Image -->
+                        <div class="hero-image-wrapper">
+                            <div class="hero-image-container">
+                                <img
+                                    src="https://wallpapers.com/images/hd/gaming-pc-setup-4032-x-3024-wallpaper-hddrabo28apipl3y.jpg"
+                                    alt="Premium Gaming PC Setup"
+                                    class="hero-image"
+                                    loading="eager"
+                                >
+                                <!-- Corner Accents -->
+                                <div class="hero-image-accent top-left"></div>
+                                <div class="hero-image-accent bottom-right"></div>
+                            </div>
+                            <!-- Glow Effects -->
+                            <div class="hero-image-glow"></div>
+                            <div class="hero-image-glow-secondary"></div>
+                        </div>
+                    </div>
+
+                    <!-- Feature Pills -->
+                    <div class="hero-features mt-10 lg:mt-12">
+                        <span class="hero-feature">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Genuine Products
+                        </span>
+                        <span class="hero-feature">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Fast Delivery
+                        </span>
+                        <span class="hero-feature">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                            Warranty Included
+                        </span>
+                    </div>
+
+                    <!-- CTA Buttons - Bottom -->
+                    <div class="hero-buttons mt-8 lg:mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="#components" class="nav-trigger btn-hero">
+                            <span class="flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                                </svg>
+                                Shop Components
+                            </span>
+                        </a>
+                        <a href="#peripherals" class="nav-trigger bg-gray-800/60 backdrop-blur-sm text-white font-semibold py-4 px-8 rounded-xl hover:bg-gray-700/80 transition-all duration-300 border border-gray-600/50 hover:border-indigo-500/50">
+                            <span class="flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                                </svg>
+                                Browse Peripherals
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Smooth Transition Gradient -->
+                <div class="hero-transition"></div>
+            </div>
+
+            <!-- Featured Products -->
+            <div class="py-5 sm:py-5 bg-gray-900 relative">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="section-header scroll-animate text-3xl font-bold text-center text-white mb-16">Featured Products</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="featured-products">
+                        <!-- Featured Item 1 -->
+                        <div class="product-card scroll-card" data-badge="hot" data-rating="4.8" data-reviews="256" data-stock="12" style="transition-delay: 0.1s">
+                            <div class="product-image-container">
+                                <span class="badge badge-hot">🔥 Hot</span>
+                                <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    </svg>
+                                </button>
+                                <img src="https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=600&q=80" alt="Graphics Card" class="product-image w-full h-56 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1f2937/d4af37?text=Image+Error';">
+                                <div class="product-image-overlay"></div>
+                                <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="stars">
+                                        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">(256)</span>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white">Next-Gen GPU</h3>
+                                <p class="text-gray-400 mt-2 text-sm line-clamp-2">Experience unparalleled performance with the latest graphics technology.</p>
+                                <div class="stock-indicator">
+                                    <span class="stock-dot in-stock"></span>
+                                    <span>12 in stock</span>
+                                </div>
+                                <div class="mt-4 flex justify-between items-center">
+                                    <span class="text-2xl font-bold price-glow">₱72,995</span>
+                                    <a href="#components" class="nav-trigger text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition">View Details →</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Featured Item 2 -->
+                        <div class="product-card scroll-card" data-badge="new" data-rating="4.9" data-reviews="128" data-stock="25" style="transition-delay: 0.2s">
+                            <div class="product-image-container">
+                                <span class="badge badge-new">✨ New</span>
+                                <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    </svg>
+                                </button>
+                                <img src="https://overclock3d.net/wp-content/uploads/2023/07/corsairs-blazing-fast-pcie-5-0-mp700-ssd-is-now-available_64c2a818c253b.jpeg" alt="NVMe SSD" class="product-image w-full h-56 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1f2937/c0c0c0?text=Image+Error';">
+                                <div class="product-image-overlay"></div>
+                                <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="stars">
+                                        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">(128)</span>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white">Blazing-Fast SSD</h3>
+                                <p class="text-gray-400 mt-2 text-sm line-clamp-2">Eliminate loading times with the latest NVMe solid-state drives.</p>
+                                <div class="stock-indicator">
+                                    <span class="stock-dot in-stock"></span>
+                                    <span>25 in stock</span>
+                                </div>
+                                <div class="mt-4 flex justify-between items-center">
+                                    <span class="text-2xl font-bold price-glow">₱9,995</span>
+                                    <a href="#components" class="nav-trigger text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition">View Details →</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Featured Item 3 -->
+                        <div class="product-card scroll-card" data-badge="sale" data-rating="4.7" data-reviews="89" data-stock="8" style="transition-delay: 0.3s">
+                            <div class="product-image-container">
+                                <span class="badge badge-sale">🏷️ Sale</span>
+                                <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    </svg>
+                                </button>
+                                <img src="https://images.indianexpress.com/2021/06/Corsair-Mechanical-Keyboard.jpg" alt="Mechanical Keyboard" class="product-image w-full h-56 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1f2937/8b5cf6?text=Image+Error';">
+                                <div class="product-image-overlay"></div>
+                                <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="stars">
+                                        <span>★</span><span>★</span><span>★</span><span>★</span><span class="empty">★</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">(89)</span>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white">Mechanical Keyboard</h3>
+                                <p class="text-gray-400 mt-2 text-sm line-clamp-2">Tactile, responsive, and built to last. Elevate your typing and gaming experience.</p>
+                                <div class="stock-indicator">
+                                    <span class="stock-dot low-stock"></span>
+                                    <span>Only 8 left!</span>
+                                </div>
+                                <div class="mt-4 flex justify-between items-center">
+                                    <span class="text-2xl font-bold price-glow">₱8,995</span>
+                                    <a href="#peripherals" class="nav-trigger text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition">View Details →</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Featured Item 4 -->
+                        <div class="product-card scroll-card" data-badge="hot" data-rating="4.9" data-reviews="312" data-stock="15" style="transition-delay: 0.4s">
+                            <div class="product-image-container">
+                                <span class="badge badge-hot">🔥 Hot</span>
+                                <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    </svg>
+                                </button>
+                                <img src="https://images.unsplash.com/photo-1555680202-c86f0e12f086?auto=format&fit=crop&w=600&q=80" alt="AMD Ryzen CPU" class="product-image w-full h-56 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1f2937/ef4444?text=CPU';">
+                                <div class="product-image-overlay"></div>
+                                <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="stars">
+                                        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">(312)</span>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white">AMD Ryzen 9 7950X</h3>
+                                <p class="text-gray-400 mt-2 text-sm line-clamp-2">16-core, 32-thread processor with 5.7GHz max boost for ultimate performance.</p>
+                                <div class="stock-indicator">
+                                    <span class="stock-dot in-stock"></span>
+                                    <span>15 in stock</span>
+                                </div>
+                                <div class="mt-4 flex justify-between items-center">
+                                    <span class="text-2xl font-bold price-glow">₱34,995</span>
+                                    <a href="#components" class="nav-trigger text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition">View Details →</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Featured Item 5 -->
+                        <div class="product-card scroll-card" data-badge="sale" data-rating="4.6" data-reviews="203" data-stock="5" style="transition-delay: 0.6s">
+                            <div class="product-image-container">
+                                <span class="badge badge-sale">🏷️ Sale</span>
+                                <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    </svg>
+                                </button>
+                                <img src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80" alt="DDR5 RAM" class="product-image w-full h-56 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1f2937/f59e0b?text=RAM';">
+                                <div class="product-image-overlay"></div>
+                                <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="stars">
+                                        <span>★</span><span>★</span><span>★</span><span>★</span><span class="empty">★</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">(203)</span>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white">DDR5 32GB RAM Kit</h3>
+                                <p class="text-gray-400 mt-2 text-sm line-clamp-2">6000MHz CL30 RGB memory for enthusiast builds and content creators.</p>
+                                <div class="stock-indicator">
+                                    <span class="stock-dot low-stock"></span>
+                                    <span>Only 5 left!</span>
+                                </div>
+                                <div class="mt-4 flex justify-between items-center">
+                                    <span class="text-2xl font-bold price-glow">₱11,995</span>
+                                    <a href="#components" class="nav-trigger text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition">View Details →</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Featured Item 7 -->
+                        <div class="product-card scroll-card" data-badge="hot" data-rating="4.9" data-reviews="445" data-stock="18" style="transition-delay: 0.7s">
+                            <div class="product-image-container">
+                                <span class="badge badge-hot">🔥 Hot</span>
+                                <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    </svg>
+                                </button>
+                                <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=600&q=80" alt="Gaming Mouse" class="product-image w-full h-56 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/1f2937/ec4899?text=Mouse';">
+                                <div class="product-image-overlay"></div>
+                                <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="stars">
+                                        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">(445)</span>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white">Ultra-Light Gaming Mouse</h3>
+                                <p class="text-gray-400 mt-2 text-sm line-clamp-2">25K DPI sensor, 58g weight, and wireless connectivity for competitive gaming.</p>
+                                <div class="stock-indicator">
+                                    <span class="stock-dot in-stock"></span>
+                                    <span>18 in stock</span>
+                                </div>
+                                <div class="mt-4 flex justify-between items-center">
+                                    <span class="text-2xl font-bold price-glow">₱4,995</span>
+                                    <a href="#peripherals" class="nav-trigger text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition">View Details →</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Components Page -->
+        <section id="components" class="page py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="section-header text-4xl font-extrabold text-white">PC Components</h2>
+                    <p class="mt-6 max-w-2xl mx-auto text-lg text-gray-400">Build or upgrade your rig with the best parts in the market.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="components-grid">
+                    <!-- Product 1: CPU -->
+                    <div class="product-card" data-badge="hot">
+                        <div class="product-image-container">
+                            <span class="badge badge-hot">🔥 Hot</span>
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://www.club386.com/wp-content/uploads/2022/10/Intel-Core-i9-13900K-Defender-of-the-Core-Faith.jpg" alt="CPU" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/d4af37?text=CPU';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                                <span class="text-xs text-gray-500">(312)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">Intel Core i9-13900K</h3>
+                            <p class="text-gray-400 text-sm">24 Cores / 32 Threads</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot in-stock"></span>
+                                <span>15 in stock</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱29,995</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Product 2: GPU -->
+                    <div class="product-card" data-badge="limited">
+                        <div class="product-image-container">
+                            <span class="badge badge-limited">⚡ Limited</span>
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=400&q=80" alt="GPU" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/c0c0c0?text=GPU';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                                <span class="text-xs text-gray-500">(189)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">NVIDIA RTX 4080</h3>
+                            <p class="text-gray-400 text-sm">16GB GDDR6X</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot low-stock"></span>
+                                <span>Only 5 left!</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱62,995</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Product 3: RAM -->
+                    <div class="product-card" data-badge="new">
+                        <div class="product-image-container">
+                            <span class="badge badge-new">✨ New</span>
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://m.media-amazon.com/images/I/71QFb5yIQCL._AC_SL1500_.jpg" alt="RAM" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/8b5cf6?text=RAM';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span class="empty">★</span></div>
+                                <span class="text-xs text-gray-500">(256)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">Corsair Vengeance RGB</h3>
+                            <p class="text-gray-400 text-sm">32GB (2x16GB) DDR5 6000MHz</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot in-stock"></span>
+                                <span>42 in stock</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱6,495</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Product 4: Motherboard -->
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://hyperpc.ae/images/catalog/hardware/motherboards/1700/asus/rog-maximus-z790-hero/asus-rog-maximus-z790-hero.jpg" alt="Motherboard" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/ffffff?text=Mobo';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                                <span class="text-xs text-gray-500">(98)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">ASUS ROG Z790</h3>
+                            <p class="text-gray-400 text-sm">LGA 1700, Wi-Fi 6E</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot in-stock"></span>
+                                <span>18 in stock</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱35,995</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Product 5: SSD -->
+                    <div class="product-card" data-badge="sale">
+                        <div class="product-image-container">
+                            <span class="badge badge-sale">🏷️ Sale</span>
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://www.storagereview.com/wp-content/uploads/2021/02/Samsung-980-pro-2tb-front.jpg" alt="SSD" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/d4af37?text=SSD';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                                <span class="text-xs text-gray-500">(445)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">Samsung 980 Pro 2TB</h3>
+                            <p class="text-gray-400 text-sm">NVMe M.2 SSD</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot in-stock"></span>
+                                <span>67 in stock</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱9,995</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Product 6: Cooler -->
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://images.unsplash.com/photo-1587202372634-32705e3bf49c?auto=format&fit=crop&w=400&q=80" alt="CPU Cooler" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/c0c0c0?text=Cooler';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span class="empty">★</span></div>
+                                <span class="text-xs text-gray-500">(178)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">Noctua NH-D15</h3>
+                            <p class="text-gray-400 text-sm">High-Performance Air Cooler</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot in-stock"></span>
+                                <span>23 in stock</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱5,995</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Product 7: PSU -->
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://netcodex.ph/wp-content/uploads/2025/01/CORSAIR-RM850x-SHIFT-WHITE-850W-PC-Power-Supply-11.webp" alt="Power Supply" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/8b5cf6?text=PSU';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                                <span class="text-xs text-gray-500">(234)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">Corsair RM850x</h3>
+                            <p class="text-gray-400 text-sm">850W 80+ Gold</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot in-stock"></span>
+                                <span>31 in stock</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱8,495</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Product 8: Case -->
+                    <div class="product-card" data-badge="hot">
+                        <div class="product-image-container">
+                            <span class="badge badge-hot">🔥 Hot</span>
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://therigbuilders.ph/cdn/shop/files/IMG_4444_1200x1200_crop_center.jpg?v=1710576200" alt="PC Case" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/ffffff?text=Case';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                                <span class="text-xs text-gray-500">(567)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">Lian Li O11 Dynamic</h3>
+                            <p class="text-gray-400 text-sm">ATX Mid-Tower Case</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot low-stock"></span>
+                                <span>Only 8 left!</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱7,995</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Peripherals Page -->
+        <section id="peripherals" class="page py-16 sm:py-24 bg-gradient-to-b from-gray-900/30 to-transparent">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="section-header text-4xl font-extrabold text-white">Gaming Peripherals</h2>
+                    <p class="mt-6 max-w-2xl mx-auto text-lg text-gray-400">Complete your setup with high-precision gear.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="peripherals-grid">
+                    <!-- Peripheral 1: Mouse -->
+                    <div class="product-card" data-badge="hot">
+                        <div class="product-image-container">
+                            <span class="badge badge-hot">🔥 Hot</span>
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=400&q=80" alt="Mouse" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/ffffff?text=Mouse';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                                <span class="text-xs text-gray-500">(892)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">Logitech G Pro Wireless</h3>
+                            <p class="text-gray-400 text-sm">Ultralight, 25K DPI</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot in-stock"></span>
+                                <span>45 in stock</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱6,995</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Peripheral 2: Keyboard -->
+                    <div class="product-card" data-badge="new">
+                        <div class="product-image-container">
+                            <span class="badge badge-new">✨ New</span>
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://images.indianexpress.com/2021/06/Corsair-Mechanical-Keyboard.jpg" alt="Keyboard" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/8b5cf6?text=Keyboard';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span class="empty">★</span></div>
+                                <span class="text-xs text-gray-500">(456)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">Razer Huntsman V2</h3>
+                            <p class="text-gray-400 text-sm">Optical Switches, TKL</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot in-stock"></span>
+                                <span>28 in stock</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱8,995</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Peripheral 3: Monitor -->
+                    <div class="product-card" data-badge="limited">
+                        <div class="product-image-container">
+                            <span class="badge badge-limited">⚡ Limited</span>
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://cdn.mos.cms.futurecdn.net/GqZzUt3zREhWUtB2UCfFNm.jpg" alt="Monitor" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/c0c0c0?text=Monitor';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                                <span class="text-xs text-gray-500">(234)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">LG UltraGear 27"</h3>
+                            <p class="text-gray-400 text-sm">1440p, 165Hz, 1ms</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot low-stock"></span>
+                                <span>Only 6 left!</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱14,995</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Peripheral 4: Headset -->
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://www.pbtech.co.nz/imgprod/H/S/HSTSTP61520__12.jpg" alt="Headset" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/d4af37?text=Headset';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                                <span class="text-xs text-gray-500">(567)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">SteelSeries Arctis Pro</h3>
+                            <p class="text-gray-400 text-sm">Hi-Res Audio, Wireless</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot in-stock"></span>
+                                <span>19 in stock</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱16,995</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Peripheral 5: Microphone -->
+                    <div class="product-card" data-badge="sale">
+                        <div class="product-image-container">
+                            <span class="badge badge-sale">🏷️ Sale</span>
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=400&q=80" alt="Microphone" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/ffffff?text=Mic';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span class="empty">★</span></div>
+                                <span class="text-xs text-gray-500">(345)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">Blue Yeti USB Mic</h3>
+                            <p class="text-gray-400 text-sm">Studio-Quality Sound</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot in-stock"></span>
+                                <span>52 in stock</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱6,495</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Peripheral 6: Webcam -->
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://cdn.mos.cms.futurecdn.net/VvMaiPBRdqfpcLM2zHSSpc.jpg" alt="Webcam" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/8b5cf6?text=Webcam';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                                <span class="text-xs text-gray-500">(678)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">Logitech C920 Webcam</h3>
+                            <p class="text-gray-400 text-sm">1080p HD Video</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot in-stock"></span>
+                                <span>89 in stock</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱3,995</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Peripheral 7: Mousepad -->
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://img.lazcdn.com/g/p/a6c60cef2b17aa7711a0070710db4542.png_720x720q80.png" alt="Mousepad" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/c0c0c0?text=Mousepad';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span class="empty">★</span></div>
+                                <span class="text-xs text-gray-500">(234)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">SteelSeries QcK XXL</h3>
+                            <p class="text-gray-400 text-sm">Desk-Sized Mousepad</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot in-stock"></span>
+                                <span>156 in stock</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱1,995</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                    <!-- Peripheral 8: Cables -->
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <button class="wishlist-btn" onclick="toggleWishlist(this, event)">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <img src="https://jlitebn.com/cdn/shop/products/Slev.30-Black-_-Red.png?v=1657441985&width=1206" alt="Cables" class="product-image w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/111827/d4af37?text=Cables';">
+                            <div class="product-image-overlay"></div>
+                            <button class="quick-view-btn" onclick="openQuickView(this)">Quick View</button>
+                        </div>
+                        <div class="p-5 text-center">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                                <span class="text-xs text-gray-500">(123)</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white">Premium Braided Cables</h3>
+                            <p class="text-gray-400 text-sm">Assorted Colors & Lengths</p>
+                            <div class="stock-indicator justify-center">
+                                <span class="stock-dot in-stock"></span>
+                                <span>200+ in stock</span>
+                            </div>
+                            <p class="text-xl font-bold price-glow mt-3">₱995</p>
+                            <button onclick="addToCart(this)" class="btn-add-cart mt-4 w-full">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Us Page -->
+        <section id="about" class="page py-16 sm:py-24 relative overflow-hidden">
+            <!-- Background Effects -->
+            <div class="absolute inset-0 pointer-events-none">
+                <div class="absolute top-20 left-10 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl animate-pulse"></div>
+                <div class="absolute bottom-20 right-10 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/5 rounded-full blur-3xl"></div>
+            </div>
+
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <!-- Header -->
+                <div class="max-w-4xl mx-auto text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-4 about-title">About <span class="text-gradient">LootBox</span></h2>
+                    <p class="text-lg md:text-xl text-indigo-300">Your Premier Destination for PC Gaming Hardware</p>
+                </div>
+
+                <!-- Company Introduction -->
+                <div class="intro-card max-w-4xl mx-auto mb-12">
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="flex-shrink-0">
+                            <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-center md:text-left">
+                            <h3 class="text-2xl font-bold text-white mb-2">Welcome to LootBox</h3>
+                            <p class="text-gray-400 leading-relaxed">
+                                LootBox is a premier e-commerce platform specializing in high-performance PC components and gaming peripherals. Based in the Philippines, we serve gamers, content creators, and PC enthusiasts who demand nothing but the best for their builds.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto mb-16">
+                    <div class="about-stat-card group">
+                        <div class="about-stat-icon">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            </svg>
+                        </div>
+                        <div class="about-stat-value" data-count="500">0</div>
+                        <div class="about-stat-label">Products</div>
+                    </div>
+                    <div class="about-stat-card group">
+                        <div class="about-stat-icon">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </div>
+                        <div class="about-stat-value" data-count="10000">0</div>
+                        <div class="about-stat-label">Happy Customers</div>
+                    </div>
+                    <div class="about-stat-card group">
+                        <div class="about-stat-icon">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <div class="about-stat-value" data-count="5">0</div>
+                        <div class="about-stat-label">Years Trusted</div>
+                    </div>
+                    <div class="about-stat-card group">
+                        <div class="about-stat-icon">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                            </svg>
+                        </div>
+                        <div class="about-stat-value">4.9</div>
+                        <div class="about-stat-label">Avg Rating</div>
+                    </div>
+                </div>
+
+                <div class="about-section-divider max-w-5xl mx-auto"></div>
+
+                <!-- What We Do & Our Story -->
+                <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
+                    <div class="about-card group">
+                        <div class="about-card-icon">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors">Our Story</h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            LootBox was born from a passion for PC gaming and a frustration with limited options in the market. Founded by enthusiasts who understood the thrill of building the perfect rig, we set out to create a platform where quality meets accessibility. What started as a small venture has grown into a trusted destination for thousands of gamers.
+                        </p>
+                    </div>
+                    <div class="about-card group">
+                        <div class="about-card-icon">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors">What We Do</h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            We curate and deliver premium PC components from world-leading brands. From cutting-edge graphics cards and processors to precision gaming peripherals, we provide everything you need to build, upgrade, or enhance your setup. Our expert team tests and verifies every product to ensure peak performance.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Mission & Vision -->
+                <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
+                    <div class="about-card group">
+                        <div class="about-card-icon">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors">Our Mission</h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            To empower gamers and creators with access to premium hardware at competitive prices, backed by exceptional customer service and expert guidance. We believe everyone deserves a high-performance PC experience.
+                        </p>
+                    </div>
+                    <div class="about-card group">
+                        <div class="about-card-icon">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors">Our Vision</h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            To become the most trusted PC hardware destination in Southeast Asia, known for authenticity, innovation, and an unwavering commitment to the gaming community. We aim to shape the future of PC building.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="about-section-divider max-w-5xl mx-auto"></div>
+
+                <!-- What Makes Us Unique -->
+                <div class="max-w-4xl mx-auto mb-12">
+                    <h3 class="text-2xl font-bold text-white text-center mb-8">Why Choose LootBox</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div class="about-value-item">
+                            <div class="about-value-icon">
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <h4 class="text-white font-semibold mb-2">100% Genuine Products</h4>
+                            <p class="text-gray-500 text-sm">Every item is sourced directly from authorized distributors</p>
+                        </div>
+                        <div class="about-value-item">
+                            <div class="about-value-icon">
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                            </div>
+                            <h4 class="text-white font-semibold mb-2">Fast Delivery</h4>
+                            <p class="text-gray-500 text-sm">Same-day dispatch on orders placed before 2PM</p>
+                        </div>
+                        <div class="about-value-item">
+                            <div class="about-value-icon">
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                            </div>
+                            <h4 class="text-white font-semibold mb-2">Warranty Included</h4>
+                            <p class="text-gray-500 text-sm">Full manufacturer warranty on all products</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="about-section-divider max-w-5xl mx-auto"></div>
+
+                <!-- Leadership / CEO Section -->
+                <div class="max-w-4xl mx-auto mb-12">
+                    <h3 class="text-2xl font-bold text-white text-center mb-8">Meet Our Leader</h3>
+                    <div class="ceo-card p-8 md:p-10">
+                        <div class="flex flex-col md:flex-row items-center gap-8">
+                            <!-- CEO Image -->
+                            <div class="flex-shrink-0">
+                                <div class="ceo-image-wrapper">
+                                    <img src="https://scontent.fcgy2-2.fna.fbcdn.net/v/t1.15752-9/589646101_1400062308130504_8976255732894388344_n.jpg?stp=dst-jpg_s2048x2048_tt6&_nc_cat=104&ccb=1-7&_nc_sid=0024fc&_nc_ohc=KG2T6-uL16gQ7kNvwHvlTku&_nc_oc=AdnwBP3Mpw6V-hX_c0sAvQIiwk-61hfHVZlILLB7tO1p0QF4GdAn75IcfKT3vTGXvQk&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fcgy2-2.fna&oh=03_Q7cD3wGacVW0oLqYmBZYaa8XCzHwt1HLnv7wfKrQyyVyOe3rug&oe=69507BF3" alt="Chris Paolo Caral - Founder & CEO" class="ceo-image">
+                                </div>
+                            </div>
+                            <!-- CEO Info -->
+                            <div class="text-center md:text-left flex-1">
+                                <h4 class="text-2xl font-bold text-white mb-1">Chris Paolo Caral</h4>
+                                <p class="text-indigo-400 font-medium mb-4">Founder & CEO, Developer</p>
+                                <p class="text-gray-400 leading-relaxed mb-6">
+                                    A passionate PC gaming enthusiast and skilled developer, Chris Paolo Caral founded LootBox with a vision to revolutionize how gamers access premium hardware. With deep technical expertise and an unwavering commitment to the gaming community, he leads the company in its mission to help every gamer build their perfect setup. His hands-on approach and dedication to quality have made LootBox a trusted name in the industry.
+                                </p>
+                                <!-- Social Links -->
+                                <div class="social-links">
+                                    <a href="mailto:cchrispaolo@gmail.com" class="social-link email" title="Email">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        </svg>
+                                    </a>
+                                    <a href="https://www.facebook.com/chrispaolo.caral.5" target="_blank" rel="noopener noreferrer" class="social-link facebook" title="Facebook">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                        </svg>
+                                    </a>
+                                    <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="social-link instagram" title="Instagram">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                                        </svg>
+                                    </a>
+                                    <a href="#" class="social-link twitter" title="Twitter/X">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Call to Action -->
+                <div class="about-cta max-w-4xl mx-auto">
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-4 relative z-10">Ready to Build Your Dream Setup?</h3>
+                    <p class="text-gray-400 mb-8 max-w-2xl mx-auto relative z-10">
+                        Explore our curated collection of premium PC components and gaming peripherals. Your perfect build is just a click away.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+                        <a href="#components" class="nav-trigger inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                            </svg>
+                            Shop Components
+                        </a>
+                        <a href="#peripherals" class="nav-trigger inline-flex items-center justify-center px-8 py-3 bg-gray-800 text-white font-semibold rounded-lg border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition-all duration-300">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
+                            </svg>
+                            Browse Peripherals
+                        </a>
+                        <a href="#contact" class="nav-trigger inline-flex items-center justify-center px-8 py-3 bg-transparent text-indigo-400 font-semibold rounded-lg border border-indigo-500/50 hover:bg-indigo-500/10 hover:border-indigo-400 transition-all duration-300">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                            </svg>
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Page -->
+        <section id="contact" class="page py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-lg mx-auto">
+                    <div class="text-center">
+                        <h2 class="text-4xl font-extrabold text-white">Get In Touch</h2>
+                        <p class="mt-4 text-lg text-gray-400">Have questions? We're here to help. Reach out to us anytime.</p>
+                    </div>
+                    <form class="mt-12 bg-gray-800 p-8 rounded-lg shadow-2xl">
+                        <div class="space-y-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-300">Full Name</label>
+                                <input type="text" name="name" id="name" class="mt-1 block w-full bg-gray-900 border border-gray-700 rounded-md py-3 px-4 text-white focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                             <div>
+                                <label for="email" class="block text-sm font-medium text-gray-300">Email Address</label>
+                                <input type="email" name="email" id="email" class="mt-1 block w-full bg-gray-900 border border-gray-700 rounded-md py-3 px-4 text-white focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label for="message" class="block text-sm font-medium text-gray-300">Message</label>
+                                <textarea id="message" name="message" rows="4" class="mt-1 block w-full bg-gray-900 border border-gray-700 rounded-md py-3 px-4 text-white focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                            </div>
+                        </div>
+                        <div class="mt-8">
+                             <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-105">
+                                Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <a href="#home" class="flex items-center space-x-3 nav-trigger">
+                        <svg class="h-8 w-8 text-indigo-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 8.25L12 3L3 8.25V15.75L12 21L21 15.75V8.25Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 15.75L21 11.25M12 15.75L3 11.25M12 15.75V21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5 6.375L7.5 11.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 3V9" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span class="text-xl font-bold text-white">Loot<span class="text-indigo-400">Box</span></span>
+                    </a>
+                    <p class="mt-4 text-gray-400 text-sm">Your one-stop shop for high-performance PC hardware.</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">Shop</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#components" class="nav-trigger text-base text-gray-400 hover:text-white">Components</a></li>
+                        <li><a href="#peripherals" class="nav-trigger text-base text-gray-400 hover:text-white">Peripherals</a></li>
+                    </ul>
+                </div>
+                 <div>
+                    <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">Company</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#about" class="nav-trigger text-base text-gray-400 hover:text-white">About</a></li>
+                        <li><a href="#contact" class="nav-trigger text-base text-gray-400 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                 <div>
+                    <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">Connect</h3>
+                     <div class="flex mt-4 space-x-6">
+                        <!-- Social Icons -->
+                        <a href="#" class="text-gray-400 hover:text-white"><span class="sr-only">Twitter</span><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path></svg></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><span class="sr-only">GitHub</span><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.165 6.839 9.49.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.031-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.03 1.595 1.03 2.688 0 3.848-2.338 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.001 10.001 0 0022 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd"></path></svg></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-800 pt-8 text-center text-sm text-gray-500">
+                <p>&copy; 2024 LootBox Technologies. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Quick View Modal -->
+    <div class="modal-overlay" id="quick-view-modal">
+        <div class="modal-content">
+            <button onclick="closeQuickView()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            <div class="flex flex-col md:flex-row">
+                <div class="md:w-1/2 p-6">
+                    <img id="modal-image" src="" alt="" class="w-full h-64 md:h-80 object-cover rounded-xl">
+                </div>
+                <div class="md:w-1/2 p-6">
+                    <div id="modal-badge" class="badge mb-3"></div>
+                    <h2 id="modal-title" class="text-2xl font-bold text-white mb-2"></h2>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="stars" id="modal-stars"></div>
+                        <span id="modal-reviews" class="text-sm text-gray-500"></span>
+                    </div>
+                    <p id="modal-description" class="text-gray-400 mb-4"></p>
+                    <div id="modal-stock" class="stock-indicator mb-4"></div>
+                    <p id="modal-price" class="text-3xl font-bold price-glow mb-6"></p>
+                    <button onclick="addToCartFromModal()" class="btn-add-cart w-full py-4 text-lg">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sound Toggle Button -->
+    <button class="sound-toggle" id="sound-toggle" onclick="toggleSound()" title="Toggle Sound Effects">
+        <svg id="sound-icon-on" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+        </svg>
+        <svg id="sound-icon-off" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>
+        </svg>
+    </button>
+
+    <script>
+        // ==================== SOUND EFFECTS SYSTEM ====================
+        let soundEnabled = false;
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const toggle = document.getElementById('sound-toggle');
+            const iconOn = document.getElementById('sound-icon-on');
+            const iconOff = document.getElementById('sound-icon-off');
+
+            if (soundEnabled) {
+                toggle.classList.add('active');
+                iconOn.classList.remove('hidden');
+                iconOff.classList.add('hidden');
+                playSound('pop');
+            } else {
+                toggle.classList.remove('active');
+                iconOn.classList.add('hidden');
+                iconOff.classList.remove('hidden');
+            }
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                switch(type) {
+                    case 'pop':
+                        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.15);
+                        break;
+                    case 'success':
+                        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
+                        oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2);
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.4);
+                        break;
+                    case 'click':
+                        oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.05);
+                        break;
+                }
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // ==================== FLOATING PARTICLES ====================
+        function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particle.style.width = (2 + Math.random() * 4) + 'px';
+                particle.style.height = particle.style.width;
+                container.appendChild(particle);
+            }
+        }
+
+        // ==================== SCROLL ANIMATIONS ====================
+        function initScrollAnimations() {
+            // Check for reduced motion preference
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReducedMotion) return;
+
+            // Select all elements that should animate on scroll
+            const animatedElements = document.querySelectorAll(
+                '.scroll-animate, .scroll-fade-up, .scroll-fade-left, .scroll-fade-right, ' +
+                '.scroll-scale, .scroll-blur, .scroll-rotate, .scroll-stagger, .scroll-card'
+            );
+
+            // Create Intersection Observer
+            const observerOptions = {
+                root: null, // viewport
+                rootMargin: '0px 0px -80px 0px', // trigger slightly before element is fully in view
+                threshold: 0.15 // trigger when 15% of element is visible
+            };
+
+            const scrollObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Add animation class
+                        entry.target.classList.add('animate-in-view');
+
+                        // For staggered animations, add delay to children
+                        if (entry.target.classList.contains('scroll-stagger')) {
+                            const children = entry.target.children;
+                            Array.from(children).forEach((child, index) => {
+                                child.style.transitionDelay = `${index * 0.1}s`;
+                            });
+                        }
+
+                        // Optionally unobserve after animation (for one-time animations)
+                        // observer.unobserve(entry.target);
+                    } else {
+                        // Remove class when out of view (for re-triggering animations)
+                        entry.target.classList.remove('animate-in-view');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all animated elements
+            animatedElements.forEach(el => {
+                scrollObserver.observe(el);
+            });
+
+            // Add scroll-based header shrink effect
+            const header = document.querySelector('header');
+            let lastScrollY = 0;
+
+            window.addEventListener('scroll', () => {
+                const currentScrollY = window.scrollY;
+
+                if (header) {
+                    if (currentScrollY > 100) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
+
+                    // Hide/show header on scroll direction
+                    if (currentScrollY > lastScrollY && currentScrollY > 200) {
+                        header.style.transform = 'translateY(-100%)';
+                    } else {
+                        header.style.transform = 'translateY(0)';
+                    }
+                }
+
+                lastScrollY = currentScrollY;
+            }, { passive: true });
+        }
+
+        // ==================== ABOUT SECTION COUNTER ANIMATION ====================
+        function initAboutCounters() {
+            const counters = document.querySelectorAll('.about-stat-value[data-count]');
+            let hasAnimated = false;
+
+            const animateCounter = (el) => {
+                const target = parseInt(el.dataset.count);
+                const duration = 2000;
+                const start = 0;
+                const startTime = performance.now();
+
+                const updateCounter = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const easeOut = 1 - Math.pow(1 - progress, 3);
+                    const current = Math.floor(start + (target - start) * easeOut);
+
+                    if (target >= 1000) {
+                        el.textContent = (current / 1000).toFixed(current >= target ? 0 : 1) + 'K+';
+                    } else {
+                        el.textContent = current + '+';
+                    }
+
+                    if (progress < 1) {
+                        requestAnimationFrame(updateCounter);
+                    }
+                };
+
+                requestAnimationFrame(updateCounter);
+            };
+
+            const aboutSection = document.getElementById('about');
+            if (aboutSection) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && !hasAnimated) {
+                            hasAnimated = true;
+                            counters.forEach(counter => animateCounter(counter));
+                        }
+                    });
+                }, { threshold: 0.3 });
+
+                observer.observe(aboutSection);
+            }
+        }
+
+        // ==================== TOAST NOTIFICATIONS ====================
+        function showToast(title, message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            const iconSvg = type === 'success'
+                ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>'
+                : type === 'error'
+                ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>'
+                : '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+
+            toast.innerHTML = `
+                <div class="toast-icon">${iconSvg}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <div class="toast-progress"></div>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('exit');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        // ==================== RIPPLE EFFECT ====================
+        function createRipple(event, element) {
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+
+            const rect = element.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (event.clientX - rect.left - size / 2) + 'px';
+            ripple.style.top = (event.clientY - rect.top - size / 2) + 'px';
+
+            element.appendChild(ripple);
+
+            setTimeout(() => ripple.remove(), 600);
+        }
+
+        // ==================== FLYING ITEM ANIMATION ====================
+        function flyToCart(button, imageSrc) {
+            const cartIcon = document.getElementById('cart-icon-container') || document.getElementById('mobile-cart-icon');
+            if (!cartIcon) return;
+
+            const buttonRect = button.getBoundingClientRect();
+            const cartRect = cartIcon.getBoundingClientRect();
+
+            const flyingItem = document.createElement('img');
+            flyingItem.src = imageSrc;
+            flyingItem.className = 'flying-item';
+            flyingItem.style.left = buttonRect.left + 'px';
+            flyingItem.style.top = buttonRect.top + 'px';
+
+            document.body.appendChild(flyingItem);
+
+            const deltaX = cartRect.left - buttonRect.left;
+            const deltaY = cartRect.top - buttonRect.top;
+
+            flyingItem.animate([
+                { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                { transform: `translate(${deltaX * 0.5}px, ${deltaY * 0.3 - 50}px) scale(0.8)`, opacity: 0.8 },
+                { transform: `translate(${deltaX}px, ${deltaY}px) scale(0.3)`, opacity: 0 }
+            ], {
+                duration: 800,
+                easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+            }).onfinish = () => {
+                flyingItem.remove();
+                shakeCartIcon();
+            };
+        }
+
+        // ==================== CART ICON SHAKE ====================
+        function shakeCartIcon() {
+            const cartIcon = document.getElementById('cart-icon-container');
+            const mobileCartIcon = document.getElementById('mobile-cart-icon');
+
+            [cartIcon, mobileCartIcon].forEach(icon => {
+                if (icon) {
+                    icon.classList.add('shake');
+                    setTimeout(() => icon.classList.remove('shake'), 600);
+                }
+            });
+
+            // Bump the badge
+            const badges = document.querySelectorAll('.cart-badge');
+            badges.forEach(badge => {
+                badge.classList.add('bump');
+                setTimeout(() => badge.classList.remove('bump'), 300);
+            });
+        }
+
+        // ==================== WISHLIST TOGGLE ====================
+        function toggleWishlist(button, event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            button.classList.toggle('active');
+            const svg = button.querySelector('svg');
+
+            if (button.classList.contains('active')) {
+                svg.setAttribute('fill', 'currentColor');
+                playSound('success');
+                showToast('Added to Wishlist', 'Item saved for later', 'success');
+            } else {
+                svg.setAttribute('fill', 'none');
+                playSound('click');
+            }
+        }
+
+        // ==================== QUICK VIEW MODAL ====================
+        let currentQuickViewProduct = null;
+
+        function openQuickView(button) {
+            const card = button.closest('.product-card');
+            const modal = document.getElementById('quick-view-modal');
+
+            const image = card.querySelector('.product-image').src;
+            const title = card.querySelector('h3').textContent;
+            const description = card.querySelector('.text-gray-400.text-sm').textContent;
+            const price = card.querySelector('.price-glow').textContent;
+            const badge = card.querySelector('.badge');
+            const stars = card.querySelector('.stars').innerHTML;
+            const reviews = card.querySelector('.text-xs.text-gray-500').textContent;
+            const stock = card.querySelector('.stock-indicator').innerHTML;
+
+            document.getElementById('modal-image').src = image;
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-description').textContent = description;
+            document.getElementById('modal-price').textContent = price;
+            document.getElementById('modal-stars').innerHTML = stars;
+            document.getElementById('modal-reviews').textContent = reviews;
+            document.getElementById('modal-stock').innerHTML = stock;
+
+            const modalBadge = document.getElementById('modal-badge');
+            if (badge) {
+                modalBadge.className = badge.className;
+                modalBadge.textContent = badge.textContent;
+                modalBadge.style.display = 'inline-flex';
+            } else {
+                modalBadge.style.display = 'none';
+            }
+
+            currentQuickViewProduct = { name: title, price, image, description };
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            playSound('pop');
+        }
+
+        function closeQuickView() {
+            const modal = document.getElementById('quick-view-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            currentQuickViewProduct = null;
+        }
+
+        function addToCartFromModal() {
+            if (currentQuickViewProduct) {
+                cart.addItem(currentQuickViewProduct);
+                updateCartBadge();
+                updateMiniCart();
+                closeQuickView();
+            }
+        }
+
+        // Close modal on overlay click
+        document.getElementById('quick-view-modal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeQuickView();
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeQuickView();
+        });
+
+        // ==================== MINI CART ====================
+        function updateMiniCart() {
+            const itemsContainer = document.getElementById('mini-cart-items');
+            const footer = document.getElementById('mini-cart-footer');
+            const countEl = document.getElementById('mini-cart-count');
+            const totalEl = document.getElementById('mini-cart-total');
+
+            if (!itemsContainer) return;
+
+            const items = cart.items;
+
+            if (items.length === 0) {
+                itemsContainer.innerHTML = `
+                    <div class="mini-cart-empty">
+                        <svg class="w-12 h-12 mx-auto mb-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <p>Your cart is empty</p>
+                    </div>
+                `;
+                footer.classList.add('hidden');
+            } else {
+                itemsContainer.innerHTML = items.slice(0, 3).map(item => `
+                    <div class="mini-cart-item">
+                        <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded-lg">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-white truncate">${item.name}</p>
+                            <p class="text-xs text-gray-400">${item.quantity} × ${item.price}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                if (items.length > 3) {
+                    itemsContainer.innerHTML += `<p class="text-xs text-gray-500 text-center py-2">+${items.length - 3} more items</p>`;
+                }
+
+                footer.classList.remove('hidden');
+                countEl.textContent = `${cart.getItemCount()} items`;
+                totalEl.textContent = '₱' + cart.getTotal().toLocaleString();
+            }
+        }
+
+        // ==================== PAGE NAVIGATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            const navTriggers = document.querySelectorAll('.nav-trigger');
+            const pages = document.querySelectorAll('.page');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            function showPage(targetId) {
+                const id = targetId.substring(1);
+
+                pages.forEach(page => {
+                    if (page.id === id) {
+                        page.classList.add('active');
+                        // Trigger entrance animations for product cards
+                        setTimeout(() => {
+                            page.querySelectorAll('.product-card.animate-in').forEach((card, index) => {
+                                card.style.animationDelay = (index * 0.05) + 's';
+                            });
+                        }, 100);
+                    } else {
+                        page.classList.remove('active');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    if (link.getAttribute('href') === targetId) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+
+                window.scrollTo(0, 0);
+                mobileMenu.classList.add('hidden');
+            }
+
+            const initialHash = window.location.hash || '#home';
+            showPage(initialHash);
+
+            navTriggers.forEach(trigger => {
+                trigger.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    history.pushState(null, null, targetId);
+                    showPage(targetId);
+                    playSound('click');
+                });
+            });
+
+            window.addEventListener('popstate', function() {
+                const targetId = window.location.hash || '#home';
+                showPage(targetId);
+            });
+
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+                playSound('click');
+            });
+
+            // Initialize particles
+            createParticles();
+
+            // Initialize mini cart
+            updateMiniCart();
+
+            // Initialize scroll animations
+            initScrollAnimations();
+
+            // Initialize about section counters
+            initAboutCounters();
+        });
+
+        // ==================== CART FUNCTIONALITY ====================
+        const cart = {
+            items: JSON.parse(localStorage.getItem('lootbox_cart')) || [],
+
+            save() {
+                localStorage.setItem('lootbox_cart', JSON.stringify(this.items));
+            },
+
+            addItem(product) {
+                const existingItem = this.items.find(item => item.name === product.name);
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    this.items.push({ ...product, quantity: 1 });
+                }
+                this.save();
+                playSound('success');
+                showToast('Added to Cart!', product.name, 'success');
+            },
+
+            removeItem(productName) {
+                this.items = this.items.filter(item => item.name !== productName);
+                this.save();
+            },
+
+            updateQuantity(productName, quantity) {
+                const item = this.items.find(item => item.name === productName);
+                if (item) {
+                    item.quantity = Math.max(1, quantity);
+                    this.save();
+                }
+            },
+
+            getTotal() {
+                return this.items.reduce((total, item) => {
+                    const price = parseFloat(item.price.replace(/[₱,]/g, ''));
+                    return total + (price * item.quantity);
+                }, 0);
+            },
+
+            getItemCount() {
+                return this.items.reduce((count, item) => count + item.quantity, 0);
+            },
+
+            clear() {
+                this.items = [];
+                this.save();
+            }
+        };
+
+        function addToCart(button) {
+            const card = button.closest('.product-card');
+            const name = card.querySelector('h3').textContent;
+            const priceEl = card.querySelector('.price-glow') || card.querySelector('.text-indigo-400');
+            const price = priceEl.textContent;
+            const image = card.querySelector('img').src;
+            const descEl = card.querySelector('.text-gray-400.text-sm') || card.querySelector('.text-gray-400');
+            const description = descEl ? descEl.textContent : '';
+
+            // Create ripple effect
+            createRipple(event, button);
+
+            // Button animation
+            button.classList.add('adding');
+            const originalText = button.textContent;
+            button.textContent = 'Adding...';
+
+            setTimeout(() => {
+                // Flying animation
+                flyToCart(button, image);
+
+                // Add to cart
+                cart.addItem({ name, price, image, description });
+                updateCartBadge();
+                updateMiniCart();
+
+                // Success state
+                button.classList.remove('adding');
+                button.classList.add('added');
+                button.textContent = '✓ Added!';
+
+                setTimeout(() => {
+                    button.classList.remove('added');
+                    button.textContent = originalText;
+                }, 1500);
+            }, 300);
+        }
+
+        function updateCartBadge() {
+            const count = cart.getItemCount();
+            const cartCountEl = document.getElementById('cart-count');
+            const mobileBadge = document.getElementById('mobile-cart-badge');
+
+            [cartCountEl, mobileBadge].forEach(el => {
+                if (el) {
+                    el.textContent = count;
+                    if (count > 0) {
+                        el.classList.remove('hidden');
+                    } else {
+                        el.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        function goToCart() {
+            window.location.href = 'cart.html';
+        }
+
+        // Initialize cart badge on page load
+        document.addEventListener('DOMContentLoaded', updateCartBadge);
+    </script>
+</body>
+</html>
